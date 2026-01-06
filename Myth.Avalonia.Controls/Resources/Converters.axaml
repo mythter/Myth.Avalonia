@@ -1,0 +1,11 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:conv="using:Myth.Avalonia.Controls.Converters"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+		<conv:MessageBoxIconToGlyphConverter x:Key="MessageBoxIconToGlyphConverter"/>
+		<conv:MessageBoxIconToColorConverter x:Key="MessageBoxIconToColorConverter"/>
+
+		<conv:EnumEqualsConverter x:Key="EnumEqualsConverter"/>
+		<conv:EnumNotEqualsConverter x:Key="EnumNotEqualsConverter"/>
+
+</ResourceDictionary>

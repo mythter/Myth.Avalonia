@@ -1,0 +1,51 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<StackPanel Spacing="15">
+
+				<Button Classes="no-padding">
+					Hello
+				</Button>
+
+				<Button Classes="no-padding square" Height="40">
+					Hello
+				</Button>
+
+				<Button Classes="no-padding content-center" Height="40" Width="100">
+					Hello
+				</Button>
+
+				<Button Classes="no-padding center square" Height="40">
+					Hello
+				</Button>
+
+				<Button Classes="stretch ">
+					Hello
+				</Button>
+
+			</StackPanel>
+		</Border>
+	</Design.PreviewWith>
+
+	<Style Selector=":is(TemplatedControl).no-padding">
+		<Setter Property="Padding" Value="0"/>
+	</Style>
+
+	<Style Selector=":is(Control).center">
+		<Setter Property="HorizontalAlignment" Value="Center"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+	</Style>
+
+	<Style Selector=":is(ContentControl).content-center">
+		<Setter Property="HorizontalContentAlignment" Value="Center"/>
+		<Setter Property="VerticalContentAlignment" Value="Center"/>
+	</Style>
+
+	<Style Selector=":is(Control).stretch">
+		<Setter Property="HorizontalAlignment" Value="Stretch"/>
+		<Setter Property="VerticalAlignment" Value="Stretch"/>
+	</Style>
+
+</Styles>

@@ -1,0 +1,40 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Design.PreviewWith>
+		<Border Padding="20">
+			<MessageBoxControl x:Name="MessageBox"
+							Title="Sample Message Box"
+							Icon="Info"
+							Message="hello world"/>
+		</Border>
+	</Design.PreviewWith>
+
+	<Styles.Resources>
+		<DataTemplate x:Key="SelectableMessageTemplate">
+			<SelectableTextBlock Text="{Binding}"
+								 VerticalAlignment="Center"
+								 TextTrimming="CharacterEllipsis"
+								 TextWrapping="Wrap"/>
+		</DataTemplate>
+
+		<DataTemplate x:Key="MessageTemplate">
+			<TextBlock Text="{Binding}"
+					   VerticalAlignment="Center"
+					   TextTrimming="CharacterEllipsis"
+					   TextWrapping="Wrap"/>
+		</DataTemplate>
+
+	</Styles.Resources>
+
+	<Style Selector="MessageBoxControl ContentControl#PART_Content">
+		<Setter Property="ContentControl.ContentTemplate"
+				Value="{StaticResource MessageTemplate}" />
+	</Style>
+
+	<Style Selector="MessageBoxControl[IsTextSelectable=True] ContentControl#PART_Content">
+		<Setter Property="ContentControl.ContentTemplate"
+				Value="{StaticResource SelectableMessageTemplate}" />
+	</Style>
+
+</Styles>

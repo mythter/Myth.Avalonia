@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Myth.Avalonia.Controls\Myth.Avalonia.Controls.csproj" />
+		<ProjectReference Include="..\Myth.Avalonia.Styles\Myth.Avalonia.Styles.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Themes\MythStyles.axaml.cs">
+	    <DependentUpon>MythStyles.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Themes\MythControls.axaml.cs">
+	    <DependentUpon>MythControls.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,72 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 x:Class="Myth.Avalonia.Controls.MessageBoxControl"
+			 xmlns:local="using:Myth.Avalonia.Controls"
+			 xmlns:vm="using:Myth.Avalonia.Controls.ControlModels"
+			 MinWidth="300" MinHeight="180"
+			 MaxWidth="400" MaxHeight="600"
+			 mc:Ignorable="d"
+			 d:DesignWidth="300" d:DesignHeight="180"
+			 Background="Transparent">
+
+	<Border CornerRadius="5" Background="#202020"
+			BorderThickness="1"
+			BorderBrush="#FF404040">
+
+		<Grid RowDefinitions="Auto,*">
+
+			<Border CornerRadius="5, 5, 0, 0"
+					Padding="8"
+					Background="#FF333333"
+					PointerPressed="OnHeaderPointerPressed">
+				<Grid Grid.Row="0"
+					  ColumnDefinitions="Auto,5,*,5,Auto"
+					  VerticalAlignment="Center">
+
+					<TextBlock Grid.Column="0"
+							   Text="{Binding $parent[local:MessageBoxControl].Icon, Converter={StaticResource MessageBoxIconToGlyphConverter}}"
+							   Foreground="{Binding $parent[local:MessageBoxControl].Icon, Converter={StaticResource MessageBoxIconToColorConverter}}"
+							   FontSize="20"
+							   FontFamily="{ StaticResource Phosphor }"/>
+
+					<TextBlock Grid.Column="2"
+							   Text="{Binding $parent[local:MessageBoxControl].Title}"
+							   VerticalAlignment="Center"/>
+
+					<Button Grid.Column="4"
+							Click="OnCloseClick"
+							Padding="0"
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+							Height="{Binding $parent.Bounds.Height}"
+							Width="{Binding $self.Height}">
+						<TextBlock Text="&#xE4F6;"
+								   FontSize="16"
+								   FontFamily="{ StaticResource Phosphor }"/>
+					</Button>
+
+				</Grid>
+			</Border>
+
+			<Border Grid.Row="1"
+					Padding="20, 15, 20, 15">
+				<Grid RowDefinitions="*,15,Auto">
+
+					<ScrollViewer>
+						<ContentControl x:Name="PART_Content"
+										Content="{Binding Message, RelativeSource={RelativeSource AncestorType=local:MessageBoxControl}}"/>
+					</ScrollViewer>
+
+					<Button Grid.Row="2"
+							Content="OK"
+							HorizontalAlignment="Center"
+							VerticalAlignment="Bottom"
+							Click="OnOkClick"/>
+				</Grid>
+			</Border>
+		</Grid>
+	</Border>
+
+</UserControl>

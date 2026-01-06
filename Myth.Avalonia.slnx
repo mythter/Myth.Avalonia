@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Myth.Avalonia.Controls/Myth.Avalonia.Controls.csproj" Id="b76cf75d-9436-482d-8be9-e33d34c97618" />
+  <Project Path="Myth.Avalonia.Styles/Myth.Avalonia.Styles.csproj" Id="9bf7bc17-8225-43c5-a2bf-f1ede06cf830" />
+  <Project Path="Myth.Avalonia/Myth.Avalonia.csproj" Id="1381d766-ba8e-4391-99de-fb2c824a9e58" />
+</Solution>

@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		x:Class="Myth.Avalonia.Controls.Windows.MessageBoxWindow"
+		xmlns:c="using:Myth.Avalonia.Controls"
+		TransparencyLevelHint="Transparent"
+		WindowStartupLocation="CenterScreen"
+		CanResize="False"
+		SizeToContent="WidthAndHeight"
+		SystemDecorations="None">
+
+	<c:MessageBoxControl x:Name="MessageBox"
+						 Close="OnClose"
+						 HeaderPointerPressed="OnHeaderPointerPressed" />
+
+</Window>
