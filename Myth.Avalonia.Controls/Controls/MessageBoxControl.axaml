@@ -4,7 +4,6 @@
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 x:Class="Myth.Avalonia.Controls.MessageBoxControl"
 			 xmlns:local="using:Myth.Avalonia.Controls"
-			 xmlns:vm="using:Myth.Avalonia.Controls.ControlModels"
 			 MinWidth="300" MinHeight="180"
 			 MaxWidth="400" MaxHeight="600"
 			 mc:Ignorable="d"

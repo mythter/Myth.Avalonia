@@ -2,10 +2,12 @@
 					xmlns:conv="using:Myth.Avalonia.Controls.Converters"
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-		<conv:MessageBoxIconToGlyphConverter x:Key="MessageBoxIconToGlyphConverter"/>
-		<conv:MessageBoxIconToColorConverter x:Key="MessageBoxIconToColorConverter"/>
+	<conv:MessageBoxIconToGlyphConverter x:Key="MessageBoxIconToGlyphConverter"/>
+	<conv:MessageBoxIconToColorConverter x:Key="MessageBoxIconToColorConverter"/>
+	<conv:MessageBoxButtonsVisibilityConverter x:Key="MessageBoxButtonsVisibilityConverter"/>
+	<conv:MessageBoxPrimaryButtonsConverter x:Key="MessageBoxPrimaryButtonsConverter"/>
 
-		<conv:EnumEqualsConverter x:Key="EnumEqualsConverter"/>
-		<conv:EnumNotEqualsConverter x:Key="EnumNotEqualsConverter"/>
+	<conv:EnumEqualsConverter x:Key="EnumEqualsConverter"/>
+	<conv:EnumNotEqualsConverter x:Key="EnumNotEqualsConverter"/>
 
 </ResourceDictionary>

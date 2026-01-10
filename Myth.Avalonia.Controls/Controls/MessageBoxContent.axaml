@@ -1,0 +1,266 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:enum="using:Myth.Avalonia.Controls.Enums">
+
+	<!--
+	Additional resources
+	Using Control Themes:
+	https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+	Using Theme Variants:
+	https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+	-->
+
+	<Design.PreviewWith>
+		<StackPanel Width="400" Spacing="10">
+			<StackPanel Background="{DynamicResource SystemRegionBrush}" Spacing="10">
+				<ThemeVariantScope RequestedThemeVariant="Light">
+					<MessageBoxContent Title="Test title"
+									   Message="Test Message"
+									   IsTextSelectable="True"
+									   ButtonsPosition="Right"
+									   Buttons="OkCancel"
+									   Icon="Warning"
+									   PrimaryButtons="Ok"
+									   CanMinimize="True"
+									   CornerRadius="15"/>
+				</ThemeVariantScope>
+
+				<MessageBoxContent >
+					<MessageBoxContent.MessageTemplate>
+						<DataTemplate>
+							<ContentControl Content="{Binding}"/>
+						</DataTemplate>
+					</MessageBoxContent.MessageTemplate>
+
+					<MessageBoxContent.Content>
+						<TextBox>Hello</TextBox>
+					</MessageBoxContent.Content>
+				</MessageBoxContent>
+			</StackPanel>
+		</StackPanel>
+	</Design.PreviewWith>
+
+	<Thickness x:Key="MessageBoxBorderThickness">1</Thickness>
+
+	<x:Double x:Key="MessageBoxFontSize">14</x:Double>
+	<x:Double x:Key="MessageBoxHeaderFontSize">14</x:Double>
+
+	<StaticResource x:Key="MessageBoxFontFamily" ResourceKey="ContentControlThemeFontFamily" />
+	<StaticResource x:Key="MessageBoxHeaderFontFamily" ResourceKey="ContentControlThemeFontFamily" />
+
+	<ResourceDictionary.ThemeDictionaries>
+		<ResourceDictionary x:Key="Default">
+			<SolidColorBrush x:Key="MessageBoxBackground" Color="#FFFFFFFF"/>
+			<SolidColorBrush x:Key="MessageBoxForeground" Color="#000000"/>
+
+			<SolidColorBrush x:Key="MessageBoxBorderBrush" Color="#404040"/>
+
+			<SolidColorBrush x:Key="MessageBoxHeaderBackground" Color="#FFEBEBEB"/>
+			<SolidColorBrush x:Key="MessageBoxHeaderForeground" Color="#000000"/>
+
+			<StaticResource x:Key="MessageBoxHeaderIconFontFamily" ResourceKey="PhosphorFill" />
+		</ResourceDictionary>
+		<ResourceDictionary x:Key="Dark">
+			<SolidColorBrush x:Key="MessageBoxBackground" Color="#202020"/>
+			<SolidColorBrush x:Key="MessageBoxForeground" Color="#FFFFFFFF"/>
+
+			<SolidColorBrush x:Key="MessageBoxBorderBrush" Color="#404040"/>
+
+			<SolidColorBrush x:Key="MessageBoxHeaderBackground" Color="#333333"/>
+			<SolidColorBrush x:Key="MessageBoxHeaderForeground" Color="#FFFFFFFF"/>
+
+			<StaticResource x:Key="MessageBoxHeaderIconFontFamily" ResourceKey="Phosphor" />
+		</ResourceDictionary>
+	</ResourceDictionary.ThemeDictionaries>
+
+	<ControlTheme x:Key="{x:Type MessageBoxContent}" TargetType="MessageBoxContent">
+
+		<Setter Property="MinWidth" Value="200"/>
+		<Setter Property="MinHeight" Value="150"/>
+		<Setter Property="MaxWidth" Value="400"/>
+		<Setter Property="MaxHeight" Value="600"/>
+
+		<Setter Property="CornerRadius" Value="5"/>
+
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Border CornerRadius="{TemplateBinding CornerRadius}"
+						BorderThickness="{DynamicResource MessageBoxBorderThickness}"
+						BorderBrush="{DynamicResource MessageBoxBorderBrush}"
+						Background="{DynamicResource MessageBoxBackground}">
+
+					<Grid RowDefinitions="Auto,*">
+
+						<!-- HEADER -->
+						<Border x:Name="PART_Header"
+								CornerRadius="{TemplateBinding HeaderCornerRadius}"
+								Padding="8"
+								Background="{DynamicResource MessageBoxHeaderBackground}">
+
+							<Grid ColumnDefinitions="Auto,5,*,5,Auto,5,Auto"
+								  VerticalAlignment="Center">
+
+								<!-- Icon -->
+								<TextBlock  x:Name="HeaderIcon"
+											Grid.Column="0"
+											Text="{TemplateBinding Icon, Converter={StaticResource MessageBoxIconToGlyphConverter}}"
+											Foreground="{TemplateBinding Icon, Converter={StaticResource MessageBoxIconToColorConverter}}"
+											FontSize="20"
+											FontFamily="{DynamicResource MessageBoxHeaderIconFontFamily}"/>
+
+								<!-- Title -->
+								<TextBlock Grid.Column="2"
+										   Text="{TemplateBinding Title}"
+										   VerticalAlignment="Center"
+										   FontSize="{DynamicResource MessageBoxHeaderFontSize}"
+										   FontFamily="{StaticResource MessageBoxHeaderFontFamily}"
+										   Foreground="{DynamicResource MessageBoxHeaderForeground}"/>
+
+								<!-- Minimize Button -->
+								<Button Grid.Column="4"
+										Command="{TemplateBinding MinimizeCommand}"
+										IsVisible="{TemplateBinding CanMinimize}"
+										Padding="1"
+										Height="{Binding $parent.Bounds.Height}"
+										Width="{Binding $self.Height}"
+										HorizontalContentAlignment="Center"
+										VerticalContentAlignment="Center">
+
+									<TextBlock Text="&#xE32A;"
+											   FontSize="16"
+											   VerticalAlignment="Center"
+											   HorizontalAlignment="Center"
+											   FontFamily="{StaticResource Phosphor}"/>
+								</Button>
+
+								<!-- Close Button -->
+								<Button Grid.Column="6"
+										Command="{TemplateBinding CloseCommand}"
+										Padding="1"
+										Height="{Binding $parent.Bounds.Height}"
+										Width="{Binding $self.Height}"
+										HorizontalContentAlignment="Center"
+										VerticalContentAlignment="Center">
+
+									<TextBlock Text="&#xE4F6;"
+											   FontSize="16"
+											   VerticalAlignment="Center"
+											   HorizontalAlignment="Center"
+											   FontFamily="{StaticResource Phosphor}"/>
+								</Button>
+
+							</Grid>
+						</Border>
+
+						<!-- CONTENT -->
+						<Border Grid.Row="1"
+								Padding="20,15">
+
+							<Grid RowDefinitions="*,15,Auto">
+
+								<ScrollViewer>
+									<ContentPresenter ContentTemplate="{TemplateBinding MessageTemplate}"
+													  Content="{TemplateBinding ActualContent}"
+													  FontSize="{StaticResource MessageBoxFontSize}"
+													  FontFamily="{StaticResource MessageBoxFontFamily}"
+													  Foreground="{DynamicResource MessageBoxForeground}" />
+								</ScrollViewer>
+
+								<!-- Buttons Container -->
+
+								<Grid Grid.Row="2">
+									<StackPanel x:Name="ButtonsPanel"
+												Orientation="Horizontal"
+												Spacing="15">
+
+										<!-- OK Button -->
+										<Button Content="{TemplateBinding OkButtonText}"
+												Command="{TemplateBinding OkCommand}"
+												Classes.accent="{TemplateBinding PrimaryButtons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.Ok}}"
+												IsVisible="{TemplateBinding Buttons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.Ok}}"/>
+
+										<!-- Yes Button -->
+										<Button Content="{TemplateBinding YesButtonText}"
+												Command="{TemplateBinding YesCommand}"
+												Classes.accent="{TemplateBinding PrimaryButtons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.Yes}}"
+												IsVisible="{TemplateBinding Buttons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.Yes}}"/>
+
+										<!-- No Button -->
+										<Button Content="{TemplateBinding NoButtonText}"
+												Command="{TemplateBinding NoCommand}"
+												Classes.accent="{TemplateBinding PrimaryButtons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.No}}"
+												IsVisible="{TemplateBinding Buttons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.No}}"/>
+
+										<!-- Cancel Button -->
+										<Button Content="{TemplateBinding CancelButtonText}"
+												Command="{TemplateBinding CancelCommand}"
+												Classes.accent="{TemplateBinding PrimaryButtons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.Cancel}}"
+												IsVisible="{TemplateBinding Buttons, Converter={StaticResource MessageBoxButtonsVisibilityConverter}, ConverterParameter={x:Static enum:MessageBoxButtons.Cancel}}"/>
+
+									</StackPanel>
+								</Grid>
+							</Grid>
+						</Border>
+
+					</Grid>
+				</Border>
+			</ControlTemplate>
+		</Setter>
+
+		<ControlTheme.Resources>
+			<!-- Message Templates -->
+			<DataTemplate x:Key="SelectableMessageTemplate">
+				<SelectableTextBlock Text="{Binding}"
+									 VerticalAlignment="Center"
+									 TextTrimming="CharacterEllipsis"
+									 TextWrapping="Wrap"/>
+			</DataTemplate>
+
+			<DataTemplate x:Key="MessageTemplate">
+				<TextBlock Text="{Binding}"
+						   VerticalAlignment="Center"
+						   TextTrimming="CharacterEllipsis"
+						   TextWrapping="Wrap"/>
+			</DataTemplate>
+
+		</ControlTheme.Resources>
+
+		<!-- Message Template -->
+
+		<!-- Simple text -->
+		<Style Selector="^">
+			<Setter Property="MessageTemplate"
+					Value="{StaticResource MessageTemplate}" />
+		</Style>
+
+		<!-- Selectable text -->
+		<Style Selector="^[IsTextSelectable=True]">
+			<Setter Property="MessageTemplate"
+					Value="{StaticResource SelectableMessageTemplate}" />
+		</Style>
+
+		<!-- Buttons Position -->
+
+		<!-- Default alignment (center) -->
+		<Style Selector="^ /template/ StackPanel#ButtonsPanel">
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+		</Style>
+
+		<!-- Left alignment -->
+		<Style Selector="^[ButtonsPosition=Left] /template/ StackPanel#ButtonsPanel">
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+		</Style>
+
+		<!-- Center alignment -->
+		<Style Selector="^[ButtonsPosition=Center] /template/ StackPanel#ButtonsPanel">
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+		</Style>
+
+		<!-- Right alignment (explicit) -->
+		<Style Selector="^[ButtonsPosition=Right] /template/ StackPanel#ButtonsPanel">
+			<Setter Property="HorizontalAlignment" Value="Right"/>
+		</Style>
+
+	</ControlTheme>
+
+</ResourceDictionary>

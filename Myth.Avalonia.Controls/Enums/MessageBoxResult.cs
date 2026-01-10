@@ -2,7 +2,10 @@
 {
 	public enum MessageBoxResult
 	{
-		Cancel,
+		None,
 		Ok,
+		Cancel,
+		Yes,
+		No,
 	}
 }

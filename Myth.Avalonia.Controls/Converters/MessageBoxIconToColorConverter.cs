@@ -1,7 +1,9 @@
 ﻿using System.Globalization;
 
+using Avalonia;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
+using Avalonia.Styling;
 
 using Myth.Avalonia.Controls.Enums;
 
@@ -13,15 +15,30 @@ namespace Myth.Avalonia.Controls.Converters
 		{
 			if (value is MessageBoxIcon icon)
 			{
-				return icon switch
+				if (Application.Current?.ActualThemeVariant == ThemeVariant.Dark)
 				{
-					MessageBoxIcon.Info => new SolidColorBrush(Color.Parse("#cabcf6")),
-					MessageBoxIcon.Warning => new SolidColorBrush(Color.Parse("#ffd800")),
-					MessageBoxIcon.Error => new SolidColorBrush(Color.Parse("#c01b1b")),
-					MessageBoxIcon.Question => new SolidColorBrush(Color.Parse("#2f98d8")),
-					_ => Brushes.White
-				};
+					return icon switch
+					{
+						MessageBoxIcon.Info => new SolidColorBrush(Color.Parse("#CABCF6")),
+						MessageBoxIcon.Warning => new SolidColorBrush(Color.Parse("#FFD800")),
+						MessageBoxIcon.Error => new SolidColorBrush(Color.Parse("#C01B1B")),
+						MessageBoxIcon.Question => new SolidColorBrush(Color.Parse("#2F98D8")),
+						_ => Brushes.White
+					};
+				}
+				else
+				{
+					return icon switch
+					{
+						MessageBoxIcon.Info => new SolidColorBrush(Color.Parse("#FF82799E")),
+						MessageBoxIcon.Warning => new SolidColorBrush(Color.Parse("#FFD800")),
+						MessageBoxIcon.Error => new SolidColorBrush(Color.Parse("#C01B1B")),
+						MessageBoxIcon.Question => new SolidColorBrush(Color.Parse("#2F98D8")),
+						_ => Brushes.Black
+					};
+				}
 			}
+
 			return Brushes.Black;
 		}
 

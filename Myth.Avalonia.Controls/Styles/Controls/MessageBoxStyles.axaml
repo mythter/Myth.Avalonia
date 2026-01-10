@@ -5,6 +5,7 @@
 		<Border Padding="20">
 			<MessageBoxControl x:Name="MessageBox"
 							Title="Sample Message Box"
+							IsTextSelectable="True"
 							Icon="Info"
 							Message="hello world"/>
 		</Border>
