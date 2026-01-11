@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net8.0</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -17,7 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Myth.Avalonia.Styles\Myth.Avalonia.Styles.csproj" />
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Xaml.Behaviors.Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Xaml.Behaviors.Interactivity" Version="$(AvaloniaVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>
