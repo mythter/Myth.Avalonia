@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -29,8 +28,6 @@ namespace Myth.Avalonia.Controls.Behaviors
 
 		private bool _popupPressed;
 
-		//private IDisposable? _propertyChangedSubscription;
-
 		static AutoCompleteDropdownButtonBehavior()
 		{
 		}
@@ -49,7 +46,6 @@ namespace Myth.Avalonia.Controls.Behaviors
 
 		protected override void OnDetaching()
 		{
-			//_propertyChangedSubscription?.Dispose();
 			RemoveDropdownButton();
 
 			if (AssociatedObject is not null)
@@ -93,23 +89,13 @@ namespace Myth.Avalonia.Controls.Behaviors
 					window.Deactivated += OnWindowDeactivated;
 				}
 
-				Debug.WriteLine($"ShowDropdownButtonProperty is {AutoCompleteBoxProperties.GetShowDropdownButton(AssociatedObject!)}");
-
 				if (AutoCompleteBoxProperties.GetShowDropdownButton(AssociatedObject!))
 				{
 					CreateDropdownButton();
 				}
-
-				//_propertyChangedSubscription = AssociatedObject?.GetObservable(AutoCompleteBoxProperties.ShowDropdownButtonProperty)
-				//	.Subscribe(new SimpleObserver<bool>(show =>
-				//	{
-				//		if (show)
-				//			Dispatcher.UIThread.Post(() => { CreateDropdownButton(); });
-				//		else
-				//			RemoveDropdownButton();
-				//	}));
 			});
 		}
+
 		private void OnWindowDeactivated(object? sender, EventArgs e)
 		{
 			_popup?.IsOpen = false;
