@@ -7,6 +7,7 @@
 	<conv:MessageBoxButtonsVisibilityConverter x:Key="MessageBoxButtonsVisibilityConverter"/>
 	<conv:MessageBoxPrimaryButtonsConverter x:Key="MessageBoxPrimaryButtonsConverter"/>
 
+	<conv:EnumEqualsConverter x:Key="EnumDescriptionConverter"/>
 	<conv:EnumEqualsConverter x:Key="EnumEqualsConverter"/>
 	<conv:EnumNotEqualsConverter x:Key="EnumNotEqualsConverter"/>
 
