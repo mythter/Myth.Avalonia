@@ -53,7 +53,7 @@
 			<SolidColorBrush x:Key="MessageBoxBackground" Color="#FFFFFFFF"/>
 			<SolidColorBrush x:Key="MessageBoxForeground" Color="#000000"/>
 
-			<SolidColorBrush x:Key="MessageBoxBorderBrush" Color="#404040"/>
+			<SolidColorBrush x:Key="MessageBoxBorderBrush" Color="#CCCCCC"/>
 
 			<SolidColorBrush x:Key="MessageBoxHeaderBackground" Color="#FFEBEBEB"/>
 			<SolidColorBrush x:Key="MessageBoxHeaderForeground" Color="#000000"/>
