@@ -95,6 +95,7 @@
 						<Border x:Name="PART_Header"
 								CornerRadius="{TemplateBinding HeaderCornerRadius}"
 								Padding="8"
+								MaxHeight="40"
 								Background="{DynamicResource MessageBoxHeaderBackground}">
 
 							<Grid ColumnDefinitions="Auto,5,*,5,Auto,5,Auto"
