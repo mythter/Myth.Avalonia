@@ -53,7 +53,7 @@
 			<SolidColorBrush x:Key="MessageBoxBackground" Color="#FFFFFFFF"/>
 			<SolidColorBrush x:Key="MessageBoxForeground" Color="#000000"/>
 
-			<SolidColorBrush x:Key="MessageBoxBorderBrush" Color="#404040"/>
+			<SolidColorBrush x:Key="MessageBoxBorderBrush" Color="#CCCCCC"/>
 
 			<SolidColorBrush x:Key="MessageBoxHeaderBackground" Color="#FFEBEBEB"/>
 			<SolidColorBrush x:Key="MessageBoxHeaderForeground" Color="#000000"/>
@@ -95,7 +95,7 @@
 						<Border x:Name="PART_Header"
 								CornerRadius="{TemplateBinding HeaderCornerRadius}"
 								Padding="8"
-								MaxHeight="35"
+								MaxHeight="40"
 								Background="{DynamicResource MessageBoxHeaderBackground}">
 
 							<Grid ColumnDefinitions="Auto,5,*,5,Auto,5,Auto"
