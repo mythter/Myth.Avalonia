@@ -89,10 +89,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 					window.Deactivated += OnWindowDeactivated;
 				}
 
-				if (AutoCompleteBoxProperties.GetShowDropdownButton(AssociatedObject!))
-				{
-					CreateDropdownButton();
-				}
+				CreateDropdownButton();
 			});
 		}
 
