@@ -11,7 +11,6 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 
-using Myth.Avalonia.Controls.AttachedProperties;
 using Myth.Avalonia.Controls.Enums;
 
 namespace Myth.Avalonia.Controls.Behaviors
@@ -28,8 +27,15 @@ namespace Myth.Avalonia.Controls.Behaviors
 
 		private bool _popupPressed;
 
-		static AutoCompleteDropdownButtonBehavior()
+		public static readonly StyledProperty<AutoCompleteBoxDropdownButtonPosition> DropdownButtonPositionProperty =
+			AvaloniaProperty.Register<AutoCompleteDropdownButtonBehavior, AutoCompleteBoxDropdownButtonPosition>(
+				nameof(DropdownButtonPosition),
+				AutoCompleteBoxDropdownButtonPosition.Left);
+
+		public AutoCompleteBoxDropdownButtonPosition DropdownButtonPosition
 		{
+			get => GetValue(DropdownButtonPositionProperty);
+			set => SetValue(DropdownButtonPositionProperty, value);
 		}
 
 		protected override void OnAttached()
@@ -146,12 +152,10 @@ namespace Myth.Avalonia.Controls.Behaviors
 			var cornerRadius = _textBox.CornerRadius;
 			var border = _textBox.BorderThickness;
 
-			var side = AutoCompleteBoxProperties.GetDropdownButtonPosition(AssociatedObject);
-
 			CornerRadius buttonRadius;
 			int defaultRadius = 3;
 
-			if (side == AutoCompleteBoxDropdownButtonPosition.Left)
+			if (DropdownButtonPosition == AutoCompleteBoxDropdownButtonPosition.Left)
 			{
 				buttonRadius = new CornerRadius(
 					Math.Max(0, cornerRadius.TopLeft - border.Left),
@@ -187,7 +191,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 
 			_dropDownButton.Click += OnDropDownButtonClick;
 
-			if (side == AutoCompleteBoxDropdownButtonPosition.Left)
+			if (DropdownButtonPosition == AutoCompleteBoxDropdownButtonPosition.Left)
 				_textBox.InnerLeftContent = _dropDownButton;
 			else
 				_textBox.InnerRightContent = _dropDownButton;
