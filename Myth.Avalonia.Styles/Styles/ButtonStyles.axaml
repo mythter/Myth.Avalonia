@@ -15,7 +15,7 @@
 	</Design.PreviewWith>
 
 	<Style Selector="Button.square">
-		<Setter Property="Height" Value="{Binding $parent.Bounds.Height}"/>
+		<Setter Property="Height" Value="{Binding $parent[Visual].Bounds.Height}"/>
 		<Setter Property="Width" Value="{Binding $self.Height}"/>
 	</Style>
 
