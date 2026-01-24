@@ -58,10 +58,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 			{
 				_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
 
-				_textBox = AssociatedObject?
-					.GetType()
-					.GetProperty("TextBox", BindingFlags.Instance | BindingFlags.NonPublic)?
-					.GetValue(AssociatedObject) as TextBox;
+				_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
 
 				_textBox?.GotFocus += OnTextBoxGotFocus;
 

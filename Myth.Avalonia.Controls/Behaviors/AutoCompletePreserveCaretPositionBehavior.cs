@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -41,14 +39,9 @@ namespace Myth.Avalonia.Controls.Behaviors
 		{
 			Dispatcher.UIThread.Post(() =>
 			{
-				var prop = AssociatedObject?.GetType().GetProperty("TextBox", BindingFlags.Instance | BindingFlags.NonPublic);
+				_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
 
-				if (prop?.GetValue(AssociatedObject) is not TextBox tb)
-					return;
-
-				_textBox = tb;
-
-				_textBox.LostFocus += OnLostFocus;
+				_textBox?.LostFocus += OnLostFocus;
 
 				_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
 

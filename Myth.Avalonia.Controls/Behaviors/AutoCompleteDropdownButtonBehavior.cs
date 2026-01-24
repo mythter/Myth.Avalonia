@@ -79,9 +79,9 @@ namespace Myth.Avalonia.Controls.Behaviors
 			Dispatcher.UIThread.Post(() =>
 			{
 				_textBox = AssociatedObject?
-					.GetType()
-					.GetProperty("TextBox", BindingFlags.Instance | BindingFlags.NonPublic)?
-					.GetValue(AssociatedObject) as TextBox;
+					.GetVisualDescendants()
+					.OfType<TextBox>()
+					.FirstOrDefault();
 
 				_textBox?.GotFocus += OnTextBoxGotFocus;
 

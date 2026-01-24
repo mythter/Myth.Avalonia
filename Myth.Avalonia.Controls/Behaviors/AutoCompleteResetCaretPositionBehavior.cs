@@ -41,12 +41,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 		{
 			Dispatcher.UIThread.Post(() =>
 			{
-				var prop = AssociatedObject?.GetType().GetProperty("TextBox", BindingFlags.Instance | BindingFlags.NonPublic);
-
-				if (prop?.GetValue(AssociatedObject) is not TextBox tb)
-					return;
-
-				_textBox = tb;
+				_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
 
 				_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
 
