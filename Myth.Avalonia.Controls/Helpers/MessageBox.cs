@@ -6,6 +6,8 @@ using Avalonia.Threading;
 
 using Myth.Avalonia.Controls.Enums;
 using Myth.Avalonia.Controls.Options;
+using Myth.Avalonia.Services;
+using Myth.Avalonia.Services.Abstractions;
 
 namespace Myth.Avalonia.Controls
 {
@@ -50,10 +52,47 @@ namespace Myth.Avalonia.Controls
 			MessageBoxButtons buttons = MessageBoxButtons.Ok,
 			MessageBoxIcon icon = MessageBoxIcon.Info)
 		{
+			var options = CreateOptions(message, title, buttons, icon);
+
+			return ShowDialog(options);
+		}
+
+		public static Task<MessageBoxResult> ShowDialog(MessageBoxOptions options)
+		{
 			var owner = GetMainWindow();
 
-			return ShowDialogInternal(owner, message, title, buttons, icon);
+			return ShowDialogInternal(owner, options);
 		}
+
+		#region Extension Methods
+
+		public static Task<MessageBoxResult> ShowMessageBoxDialog(
+			this IDialogContext? context,
+			string message,
+			string title,
+			MessageBoxButtons buttons = MessageBoxButtons.Ok,
+			MessageBoxIcon icon = MessageBoxIcon.Info)
+		{
+			var options = CreateOptions(message, title, buttons, icon);
+
+			return ShowMessageBoxDialog(context, options);
+		}
+
+		public static Task<MessageBoxResult> ShowMessageBoxDialog(
+			this IDialogContext? context,
+			MessageBoxOptions options)
+		{
+			ArgumentNullException.ThrowIfNull(context);
+
+			// Get the owner window. If it is null, throw an exception
+			var ownerWindow = DialogManager.GetTopLevelForContext(context) as Window
+							  ?? throw new InvalidOperationException(
+								  "The method ShowDialogWindow can only be used on a Window");
+
+			return ShowDialogInternal(ownerWindow, options);
+		}
+
+		#endregion
 
 		#region Convenient Methods
 

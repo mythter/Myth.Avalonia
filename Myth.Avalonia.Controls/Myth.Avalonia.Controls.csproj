@@ -23,6 +23,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Myth.Avalonia.Services\Myth.Avalonia.Services.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Compile Update="Windows\MessageBoxWindow.axaml.cs">
 			<DependentUpon>MessageBoxWindow.axaml</DependentUpon>
 		</Compile>
