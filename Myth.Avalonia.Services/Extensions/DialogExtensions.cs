@@ -8,44 +8,38 @@ namespace Myth.Avalonia.Services.Extensions
 {
 	public static class DialogExtensions
 	{
+		#region Public Methods
+
 		/// <summary>
-		/// Shows an open file dialog for a registered context, most likely a ViewModel
+		/// Shows an open file dialog for a registered context
 		/// </summary>
 		/// <param name="context">The context</param>
-		/// <param name="title">The dialog title or a default is null</param>
-		/// <param name="selectMany">Is selecting many files allowed?</param>
-		/// <returns>An array of file names</returns>
-		/// <exception cref="ArgumentNullException">if context was null</exception>
-		public static async Task<List<string>?> OpenFileDialogAsync(this IDialogContext? context,
+		/// <param name="title">The dialog title</param>
+		/// <param name="fileTypeFilter">The dialog file type filter</param>
+		/// <returns>Selected file path</returns>
+		/// <exception cref="ArgumentNullException">if context is null</exception>
+		public static async Task<string?> OpenFileDialogAsync(this IDialogContext? context,
 			string? title = null,
-			Dictionary<string, string[]>? fileTypeFilter = null,
-			bool selectMany = false)
+			Dictionary<string, string[]>? fileTypeFilter = null)
 		{
-			ArgumentNullException.ThrowIfNull(context);
+			var files = await OpenFileDialogAsync(context, title, fileTypeFilter, selectMany: false);
 
-			// lookup the TopLevel for the context. If no TopLevel was found, we throw an exception
-			var topLevel = DialogManager.GetTopLevelForContext(context)
-				?? throw new InvalidOperationException("No TopLevel was resolved for the given context.");
+			return files.FirstOrDefault();
+		}
 
-			var fileFilters = new List<FilePickerFileType>();
-
-			foreach (var filter in fileTypeFilter ?? [])
-			{
-				fileFilters.Add(new FilePickerFileType(filter.Key)
-				{
-					Patterns = filter.Value.Length == 0 ? ["*"] : filter.Value
-				});
-			}
-
-			var storageFiles = await topLevel.StorageProvider.OpenFilePickerAsync(
-				new FilePickerOpenOptions()
-				{
-					AllowMultiple = selectMany,
-					FileTypeFilter = fileTypeFilter is null ? null : fileFilters,
-					Title = title ?? "Select file(s)"
-				});
-
-			return [.. storageFiles.Select(s => s.Path.AbsolutePath)];
+		/// <summary>
+		/// Shows an open file dialog for a registered context
+		/// </summary>
+		/// <param name="context">The context</param>
+		/// <param name="title">The dialog title</param>
+		/// <param name="fileTypeFilter">The dialog file type filter</param>
+		/// <returns>An array of selected file paths</returns>
+		/// <exception cref="ArgumentNullException">if context is null</exception>
+		public static Task<List<string>> OpenFilesDialogAsync(this IDialogContext? context,
+			string? title = null,
+			Dictionary<string, string[]>? fileTypeFilter = null)
+		{
+			return OpenFileDialogAsync(context, title, fileTypeFilter, selectMany: true);
 		}
 
 		/// <summary>
@@ -134,12 +128,60 @@ namespace Myth.Avalonia.Services.Extensions
 			var notificationManager = DialogManager.GetVisualForContext(context) as WindowNotificationManager
 				?? throw new InvalidOperationException("The method ShowNotificationMessage must be used on a WindowNotificationManager");
 
-			if(notificationPosition is not null)
+			if (notificationPosition is not null)
 			{
 				notificationManager.Position = notificationPosition.Value;
 			}
 
 			notificationManager.Show(notification);
 		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Shows an open file dialog for a registered context
+		/// </summary>
+		/// <param name="context">The context</param>
+		/// <param name="title">The dialog title</param>
+		/// <param name="fileTypeFilter">The dialog file type filter</param>
+		/// <param name="selectMany">Is selecting many files allowed?</param>
+		/// <returns>An array of file names</returns>
+		/// <exception cref="ArgumentNullException">if context was null</exception>
+		private static async Task<List<string>> OpenFileDialogAsync(
+			IDialogContext? context,
+			string? title,
+			Dictionary<string, string[]>? fileTypeFilter,
+			bool selectMany)
+		{
+			ArgumentNullException.ThrowIfNull(context);
+
+			// lookup the TopLevel for the context. If no TopLevel was found, we throw an exception
+			var topLevel = DialogManager.GetTopLevelForContext(context)
+				?? throw new InvalidOperationException("No TopLevel was resolved for the given context.");
+
+			var fileFilters = new List<FilePickerFileType>();
+
+			foreach (var filter in fileTypeFilter ?? [])
+			{
+				fileFilters.Add(new FilePickerFileType(filter.Key)
+				{
+					Patterns = filter.Value.Length == 0 ? ["*"] : filter.Value
+				});
+			}
+
+			var storageFiles = await topLevel.StorageProvider.OpenFilePickerAsync(
+				new FilePickerOpenOptions()
+				{
+					AllowMultiple = selectMany,
+					FileTypeFilter = fileTypeFilter is null ? null : fileFilters,
+					Title = title ?? "Select file(s)"
+				});
+
+			return [.. storageFiles.Select(s => s.Path.AbsolutePath)];
+		}
+
+		#endregion
 	}
 }
