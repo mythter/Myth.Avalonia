@@ -18,11 +18,11 @@ namespace Myth.Avalonia.Services.Extensions
 		/// <param name="fileTypeFilter">The dialog file type filter</param>
 		/// <returns>Selected file path</returns>
 		/// <exception cref="ArgumentNullException">if context is null</exception>
-		public static async Task<string?> OpenFileDialogAsync(this IDialogContext? context,
+		public static async Task<string?> ShowOpenFileDialogAsync(this IDialogContext? context,
 			string? title = null,
 			Dictionary<string, string[]>? fileTypeFilter = null)
 		{
-			var files = await OpenFileDialogAsync(context, title, fileTypeFilter, selectMany: false);
+			var files = await ShowOpenFileDialogAsync(context, title, fileTypeFilter, selectMany: false);
 
 			return files.FirstOrDefault();
 		}
@@ -35,11 +35,52 @@ namespace Myth.Avalonia.Services.Extensions
 		/// <param name="fileTypeFilter">The dialog file type filter</param>
 		/// <returns>An array of selected file paths</returns>
 		/// <exception cref="ArgumentNullException">if context is null</exception>
-		public static Task<List<string>> OpenFilesDialogAsync(this IDialogContext? context,
+		public static Task<List<string>> ShowOpenFilesDialogAsync(this IDialogContext? context,
 			string? title = null,
 			Dictionary<string, string[]>? fileTypeFilter = null)
 		{
-			return OpenFileDialogAsync(context, title, fileTypeFilter, selectMany: true);
+			return ShowOpenFileDialogAsync(context, title, fileTypeFilter, selectMany: true);
+		}
+
+		/// <summary>
+		/// Shows a save file dialog for a registered context
+		/// </summary>
+		/// <param name="context">The context</param>
+		/// <param name="title">The dialog title</param>
+		/// <param name="fileTypeFilter">The dialog file type filter</param>
+		/// <returns>An array of selected file paths</returns>
+		/// <exception cref="ArgumentNullException">if context is null</exception>
+		public static async Task<string?> ShowSaveFileDialogAsync(this IDialogContext? context,
+			string? title = null,
+			string? suggestedFileName = null,
+			Dictionary<string, string[]>? fileTypeChoices = null)
+		{
+			ArgumentNullException.ThrowIfNull(context);
+
+			// lookup the TopLevel for the context. If no TopLevel was found, we throw an exception
+			var topLevel = DialogManager.GetTopLevelForContext(context)
+				?? throw new InvalidOperationException("No TopLevel was resolved for the given context.");
+
+			var fileChoices = new List<FilePickerFileType>();
+
+			foreach (var filter in fileTypeChoices ?? [])
+			{
+				fileChoices.Add(new FilePickerFileType(filter.Key)
+				{
+					Patterns = filter.Value.Length == 0 ? ["*"] : filter.Value
+				});
+			}
+
+			var options = new FilePickerSaveOptions
+			{
+				Title = title ?? "Save file",
+				SuggestedFileName = suggestedFileName,
+				FileTypeChoices = fileTypeChoices is null ? null : fileChoices
+			};
+
+			var file = await topLevel.StorageProvider.SaveFilePickerAsync(options);
+
+			return file?.Path.AbsolutePath;
 		}
 
 		/// <summary>
@@ -149,7 +190,7 @@ namespace Myth.Avalonia.Services.Extensions
 		/// <param name="selectMany">Is selecting many files allowed?</param>
 		/// <returns>An array of file names</returns>
 		/// <exception cref="ArgumentNullException">if context was null</exception>
-		private static async Task<List<string>> OpenFileDialogAsync(
+		private static async Task<List<string>> ShowOpenFileDialogAsync(
 			IDialogContext? context,
 			string? title,
 			Dictionary<string, string[]>? fileTypeFilter,
@@ -179,7 +220,7 @@ namespace Myth.Avalonia.Services.Extensions
 					Title = title ?? "Select file(s)"
 				});
 
-			return [.. storageFiles.Select(s => s.Path.AbsolutePath)];
+			return [.. storageFiles.Select(s => s.TryGetLocalPath() ?? s.Name)];
 		}
 
 		#endregion

@@ -8,7 +8,7 @@
 		WindowStartupLocation="CenterScreen"
 		CanResize="False"
 		SizeToContent="WidthAndHeight"
-		SystemDecorations="None">
+		WindowDecorations="None">
 
 	<c:MessageBoxControl x:Name="MessageBox"
 						 Close="OnClose"

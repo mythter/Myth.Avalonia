@@ -72,7 +72,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 					handledEventsToo: true
 				);
 
-				if (AssociatedObject?.GetVisualRoot() is Window window)
+				if (AssociatedObject?.GetPresentationSource()?.RootVisual?.Parent is Window window)
 				{
 					window.Deactivated += (_, _) =>
 					{

@@ -247,7 +247,7 @@ namespace Myth.Avalonia.Controls
 				MinHeight = options.MinHeight,
 				MaxHeight = options.MaxHeight,
 				WindowStartupLocation = options.StartupLocation,
-				SystemDecorations = SystemDecorations.None,
+				WindowDecorations = WindowDecorations.None,
 				SizeToContent = SizeToContent.WidthAndHeight,
 				TransparencyLevelHint = [WindowTransparencyLevel.Transparent],
 				Topmost = options.Topmost,

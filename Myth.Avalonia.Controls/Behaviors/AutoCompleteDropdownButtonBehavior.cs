@@ -60,7 +60,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 				AssociatedObject.AttachedToVisualTree -= OnAttachedToVisualTree;
 			}
 
-			if (AssociatedObject?.GetVisualRoot() is Window window)
+			if (AssociatedObject?.GetPresentationSource()?.RootVisual?.Parent is Window window)
 			{
 				window.Deactivated -= OnWindowDeactivated;
 			}
@@ -90,7 +90,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 				// disable light dismiss so that clicking outside the popup doesn't close it
 				_popup?.IsLightDismissEnabled = false;
 
-				if (AssociatedObject?.GetVisualRoot() is Window window)
+				if (AssociatedObject?.GetPresentationSource()?.RootVisual?.Parent is Window window)
 				{
 					window.Deactivated += OnWindowDeactivated;
 				}
@@ -104,7 +104,7 @@ namespace Myth.Avalonia.Controls.Behaviors
 			_popup?.IsOpen = false;
 		}
 
-		private void OnTextBoxGotFocus(object? sender, GotFocusEventArgs e)
+		private void OnTextBoxGotFocus(object? sender, FocusChangedEventArgs e)
 		{
 			if (_popupPressed)
 			{
