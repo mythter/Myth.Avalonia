@@ -53,7 +53,7 @@ namespace Myth.Avalonia.Services.Extensions
 		public static async Task<string?> ShowSaveFileDialogAsync(this IDialogContext? context,
 			string? title = null,
 			string? suggestedFileName = null,
-			Dictionary<string, string[]>? fileTypeChoices = null)
+			Dictionary<string, string[]>? fileTypeFilter = null)
 		{
 			ArgumentNullException.ThrowIfNull(context);
 
@@ -63,7 +63,7 @@ namespace Myth.Avalonia.Services.Extensions
 
 			var fileChoices = new List<FilePickerFileType>();
 
-			foreach (var filter in fileTypeChoices ?? [])
+			foreach (var filter in fileTypeFilter ?? [])
 			{
 				fileChoices.Add(new FilePickerFileType(filter.Key)
 				{
@@ -75,12 +75,12 @@ namespace Myth.Avalonia.Services.Extensions
 			{
 				Title = title ?? "Save file",
 				SuggestedFileName = suggestedFileName,
-				FileTypeChoices = fileTypeChoices is null ? null : fileChoices
+				FileTypeChoices = fileTypeFilter is null ? null : fileChoices
 			};
 
 			var file = await topLevel.StorageProvider.SaveFilePickerAsync(options);
 
-			return file?.Path.AbsolutePath;
+			return file?.TryGetLocalPath() ?? file?.Name;
 		}
 
 		/// <summary>
