@@ -11,6 +11,7 @@
 				<ResourceInclude Source="/Styles/Controls/StaticComboBoxStyles.axaml"/>
 
 				<ResourceInclude Source="/Controls/MessageBoxContent.axaml"/>
+				<ResourceInclude Source="/Controls/MarqueeTextBlock.axaml"/>
 			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Styles.Resources>

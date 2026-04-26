@@ -1,0 +1,52 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:controls="using:Myth.Avalonia.Controls">
+
+	<!--
+	Additional resources
+	Using Control Themes:
+	https://docs.avaloniaui.net/docs/basics/user-interface/styling/control-themes
+	Using Theme Variants:
+	https://docs.avaloniaui.net/docs/guides/styles-and-resources/how-to-use-theme-variants
+	-->
+
+	<Design.PreviewWith>
+		<StackPanel Width="400" Spacing="10">
+			<StackPanel Background="Gray" Margin="10" Width="100">
+				<controls:MarqueeTextBlock Text="Some long text very very long long"
+										   Padding="5, 0"
+										   Margin="10"
+										   FadeSize="10"/>
+			</StackPanel>
+		</StackPanel>
+	</Design.PreviewWith>
+
+	<ControlTheme x:Key="{x:Type controls:MarqueeTextBlock}"
+				  TargetType="controls:MarqueeTextBlock">
+		<Setter Property="ClipToBounds" Value="True" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Panel>
+					<controls:MarqueePanel x:Name="PART_Container"
+										   Margin="{TemplateBinding Padding}"
+										   Background="{TemplateBinding Background}">
+						<TextBlock x:Name="PART_Text"
+								   Text="{TemplateBinding Text}"
+								   TextWrapping="NoWrap"
+								   Foreground="{TemplateBinding Foreground}" />
+					</controls:MarqueePanel>
+
+					<Border x:Name="PART_LeftFade"
+							Width="{TemplateBinding FadeSize}"
+							HorizontalAlignment="Left"
+							IsHitTestVisible="False" />
+
+					<Border x:Name="PART_RightFade"
+							Width="{TemplateBinding FadeSize}"
+							HorizontalAlignment="Right"
+							IsHitTestVisible="False" />
+				</Panel>
+			</ControlTemplate>
+		</Setter>
+	</ControlTheme>
+</ResourceDictionary>
