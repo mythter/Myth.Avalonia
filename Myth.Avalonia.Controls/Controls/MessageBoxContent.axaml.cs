@@ -13,9 +13,12 @@ using Myth.Avalonia.Controls.Enums;
 
 namespace Myth.Avalonia.Controls;
 
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1121:Assignments should not be made from within sub-expressions", Justification = "It's okay")]
 public class MessageBoxContent : ContentControl
 {
 	private Border? _headerBorder;
+
+	#region Styled Properties
 
 	#region HeaderBackground
 
@@ -117,16 +120,6 @@ public class MessageBoxContent : ContentControl
 
 	#endregion
 
-	#region Events
-
-	#region HeaderPointerPressed
-
-	public event EventHandler<PointerPressedEventArgs>? HeaderPointerPressed;
-
-	#endregion
-
-	#endregion
-
 	#region IsTextSelectable
 
 	public static readonly StyledProperty<bool> IsTextSelectableProperty =
@@ -153,14 +146,6 @@ public class MessageBoxContent : ContentControl
 
 	#endregion
 
-	#region Result
-
-	private readonly TaskCompletionSource<MessageBoxResult>? _resultSource;
-
-	public Task<MessageBoxResult> ResultTask => _resultSource?.Task ?? Task.FromResult(MessageBoxResult.Cancel);
-
-	#endregion
-
 	#region CanMinimize
 
 	public static readonly StyledProperty<bool> CanMinimizeProperty =
@@ -171,6 +156,22 @@ public class MessageBoxContent : ContentControl
 		get => GetValue(CanMinimizeProperty);
 		set => SetValue(CanMinimizeProperty, value);
 	}
+
+	#endregion
+
+	#endregion
+
+	#region Events
+
+	public event EventHandler<PointerPressedEventArgs>? HeaderPointerPressed;
+
+	#endregion
+
+	#region Result
+
+	private readonly TaskCompletionSource<MessageBoxResult>? _resultSource;
+
+	public Task<MessageBoxResult> ResultTask => _resultSource?.Task ?? Task.FromResult(MessageBoxResult.Cancel);
 
 	#endregion
 
@@ -351,32 +352,36 @@ public class MessageBoxContent : ContentControl
 
 	#endregion
 
+	#region Constructors
+
 	public MessageBoxContent()
 	{
 		_resultSource = new TaskCompletionSource<MessageBoxResult>();
 		InitializeDefaultCommands();
 	}
 
+	#endregion
+
+	#region Public Methods
+
 	public void SetResult(MessageBoxResult result)
 	{
 		_resultSource?.TrySetResult(result);
 	}
 
+	#endregion
+
+	#region Overrides
+
 	protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
 	{
 		base.OnApplyTemplate(e);
 
-		if (_headerBorder != null)
-		{
-			_headerBorder.PointerPressed -= OnHeaderBorderPointerPressed;
-		}
+		_headerBorder?.PointerPressed -= OnHeaderBorderPointerPressed;
 
 		_headerBorder = e.NameScope.Find<Border>("PART_Header");
 
-		if (_headerBorder != null)
-		{
-			_headerBorder.PointerPressed += OnHeaderBorderPointerPressed;
-		}
+		_headerBorder?.PointerPressed += OnHeaderBorderPointerPressed;
 	}
 
 	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -393,6 +398,10 @@ public class MessageBoxContent : ContentControl
 			UpdateActualContent();
 		}
 	}
+
+	#endregion
+
+	#region Private Methods
 
 	private void InitializeDefaultCommands()
 	{
@@ -423,4 +432,6 @@ public class MessageBoxContent : ContentControl
 	{
 		HeaderPointerPressed?.Invoke(this, e);
 	}
+
+	#endregion
 }

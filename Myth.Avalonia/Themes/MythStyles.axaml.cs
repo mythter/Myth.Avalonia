@@ -1,13 +1,12 @@
 ﻿using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
 
-namespace Myth.Avalonia.Themes
+namespace Myth.Avalonia.Themes;
+
+public class MythStyles : Styles
 {
-	public class MythStyles : Styles
+	public MythStyles()
 	{
-		public MythStyles()
-		{
-			AvaloniaXamlLoader.Load(this);
-		}
+		AvaloniaXamlLoader.Load(this);
 	}
 }

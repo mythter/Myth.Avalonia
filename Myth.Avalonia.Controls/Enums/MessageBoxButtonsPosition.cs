@@ -1,9 +1,8 @@
-﻿namespace Myth.Avalonia.Controls.Enums
+﻿namespace Myth.Avalonia.Controls.Enums;
+
+public enum MessageBoxButtonsPosition
 {
-	public enum MessageBoxButtonsPosition
-	{
-		Center,
-		Left,
-		Right
-	}
+	Center,
+	Left,
+	Right
 }

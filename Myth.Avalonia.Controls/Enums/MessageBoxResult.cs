@@ -1,11 +1,10 @@
-﻿namespace Myth.Avalonia.Controls.Enums
+﻿namespace Myth.Avalonia.Controls.Enums;
+
+public enum MessageBoxResult
 {
-	public enum MessageBoxResult
-	{
-		None,
-		Ok,
-		Cancel,
-		Yes,
-		No,
-	}
+	None,
+	Ok,
+	Cancel,
+	Yes,
+	No,
 }

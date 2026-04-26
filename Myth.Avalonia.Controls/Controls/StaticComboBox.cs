@@ -1,26 +1,25 @@
 ﻿using Avalonia;
 using Avalonia.Media;
 
-namespace Myth.Avalonia.Controls
+namespace Myth.Avalonia.Controls;
+
+public class StaticComboBox : CustomComboBox
 {
-	public class StaticComboBox : CustomComboBox
+	public static readonly StyledProperty<object?> PlaceholderProperty =
+		AvaloniaProperty.Register<StaticComboBox, object?>(nameof(Placeholder));
+
+	public object? Placeholder
 	{
-		public static readonly StyledProperty<object?> PlaceholderProperty =
-			AvaloniaProperty.Register<StaticComboBox, object?>(nameof(Placeholder));
+		get => GetValue(PlaceholderProperty);
+		set => SetValue(PlaceholderProperty, value);
+	}
 
-		public object? Placeholder
-		{
-			get => GetValue(PlaceholderProperty);
-			set => SetValue(PlaceholderProperty, value);
-		}
+	public static readonly StyledProperty<IBrush?> DefaultTitleForegroundProperty =
+		AvaloniaProperty.Register<StaticComboBox, IBrush?>(nameof(DefaultTitleForeground));
 
-		public static readonly StyledProperty<IBrush?> DefaultTitleForegroundProperty =
-			AvaloniaProperty.Register<StaticComboBox, IBrush?>(nameof(DefaultTitleForeground));
-
-		public IBrush? DefaultTitleForeground
-		{
-			get => GetValue(DefaultTitleForegroundProperty);
-			set => SetValue(DefaultTitleForegroundProperty, value);
-		}
+	public IBrush? DefaultTitleForeground
+	{
+		get => GetValue(DefaultTitleForegroundProperty);
+		set => SetValue(DefaultTitleForegroundProperty, value);
 	}
 }

@@ -1,10 +1,9 @@
-﻿namespace Myth.Avalonia.Controls.Enums
+﻿namespace Myth.Avalonia.Controls.Enums;
+
+public enum MessageBoxIcon
 {
-	public enum MessageBoxIcon
-	{
-		Info,
-		Warning,
-		Error,
-		Question
-	}
+	Info,
+	Warning,
+	Error,
+	Question
 }

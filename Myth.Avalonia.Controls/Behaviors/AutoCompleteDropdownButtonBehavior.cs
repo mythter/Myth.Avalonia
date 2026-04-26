@@ -13,210 +13,209 @@ using Avalonia.Xaml.Interactivity;
 
 using Myth.Avalonia.Controls.Enums;
 
-namespace Myth.Avalonia.Controls.Behaviors
+namespace Myth.Avalonia.Controls.Behaviors;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1121:Assignments should not be made from within sub-expressions", Justification = "I don't think so")]
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "<Pending>")]
+public class AutoCompleteDropdownButtonBehavior : Behavior<AutoCompleteBox>
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S1121:Assignments should not be made from within sub-expressions", Justification = "I don't think so")]
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "<Pending>")]
-	public class AutoCompleteDropdownButtonBehavior : Behavior<AutoCompleteBox>
+	private TextBox? _textBox;
+
+	private Button? _dropDownButton;
+
+	private Popup? _popup;
+
+	private bool _popupPressed;
+
+	public static readonly StyledProperty<AutoCompleteBoxDropdownButtonPosition> DropdownButtonPositionProperty =
+		AvaloniaProperty.Register<AutoCompleteDropdownButtonBehavior, AutoCompleteBoxDropdownButtonPosition>(
+			nameof(DropdownButtonPosition),
+			AutoCompleteBoxDropdownButtonPosition.Left);
+
+	public AutoCompleteBoxDropdownButtonPosition DropdownButtonPosition
 	{
-		private TextBox? _textBox;
+		get => GetValue(DropdownButtonPositionProperty);
+		set => SetValue(DropdownButtonPositionProperty, value);
+	}
 
-		private Button? _dropDownButton;
-
-		private Popup? _popup;
-
-		private bool _popupPressed;
-
-		public static readonly StyledProperty<AutoCompleteBoxDropdownButtonPosition> DropdownButtonPositionProperty =
-			AvaloniaProperty.Register<AutoCompleteDropdownButtonBehavior, AutoCompleteBoxDropdownButtonPosition>(
-				nameof(DropdownButtonPosition),
-				AutoCompleteBoxDropdownButtonPosition.Left);
-
-		public AutoCompleteBoxDropdownButtonPosition DropdownButtonPosition
+	protected override void OnAttached()
+	{
+		if (AssociatedObject is not null)
 		{
-			get => GetValue(DropdownButtonPositionProperty);
-			set => SetValue(DropdownButtonPositionProperty, value);
+			AssociatedObject.DropDownOpening += DropDownOpening;
+
+			AssociatedObject.AttachedToVisualTree += OnAttachedToVisualTree;
 		}
 
-		protected override void OnAttached()
+		base.OnAttached();
+	}
+
+	protected override void OnDetaching()
+	{
+		RemoveDropdownButton();
+
+		if (AssociatedObject is not null)
 		{
-			if (AssociatedObject is not null)
-			{
-				AssociatedObject.DropDownOpening += DropDownOpening;
-
-				AssociatedObject.AttachedToVisualTree += OnAttachedToVisualTree;
-			}
-
-			base.OnAttached();
+			AssociatedObject.DropDownOpening -= DropDownOpening;
+			AssociatedObject.AttachedToVisualTree -= OnAttachedToVisualTree;
 		}
 
-		protected override void OnDetaching()
+		if (AssociatedObject?.GetPresentationSource()?.RootVisual?.Parent is Window window)
 		{
-			RemoveDropdownButton();
+			window.Deactivated -= OnWindowDeactivated;
+		}
 
-			if (AssociatedObject is not null)
-			{
-				AssociatedObject.DropDownOpening -= DropDownOpening;
-				AssociatedObject.AttachedToVisualTree -= OnAttachedToVisualTree;
-			}
+		_popup?.IsLightDismissEnabled = true; // giving back the original behavior
+
+		_textBox?.GotFocus -= OnTextBoxGotFocus;
+
+		_dropDownButton?.Click -= OnDropDownButtonClick;
+
+		base.OnDetaching();
+	}
+
+	private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+	{
+		Dispatcher.UIThread.Post(() =>
+		{
+			_textBox = AssociatedObject?
+				.GetVisualDescendants()
+				.OfType<TextBox>()
+				.FirstOrDefault();
+
+			_textBox?.GotFocus += OnTextBoxGotFocus;
+
+			_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
+
+			// disable light dismiss so that clicking outside the popup doesn't close it
+			_popup?.IsLightDismissEnabled = false;
 
 			if (AssociatedObject?.GetPresentationSource()?.RootVisual?.Parent is Window window)
 			{
-				window.Deactivated -= OnWindowDeactivated;
+				window.Deactivated += OnWindowDeactivated;
 			}
 
-			_popup?.IsLightDismissEnabled = true; // giving back the original behavior
+			CreateDropdownButton();
+		});
+	}
 
-			_textBox?.GotFocus -= OnTextBoxGotFocus;
+	private void OnWindowDeactivated(object? sender, EventArgs e)
+	{
+		_popup?.IsOpen = false;
+	}
 
-			_dropDownButton?.Click -= OnDropDownButtonClick;
-
-			base.OnDetaching();
-		}
-
-		private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+	private void OnTextBoxGotFocus(object? sender, FocusChangedEventArgs e)
+	{
+		if (_popupPressed)
 		{
-			Dispatcher.UIThread.Post(() =>
+			_popupPressed = false;
+		}
+	}
+
+	private void DropDownOpening(object? sender, System.ComponentModel.CancelEventArgs e)
+	{
+		if (_textBox?.IsReadOnly ?? false)
+		{
+			e.Cancel = true;
+		}
+	}
+
+	private void ShowDropdown()
+	{
+		if (AssociatedObject is not null && !AssociatedObject.IsDropDownOpen)
+		{
+			typeof(AutoCompleteBox).GetMethod("PopulateDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [AssociatedObject, EventArgs.Empty]);
+			typeof(AutoCompleteBox).GetMethod("OpeningDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [false]);
+
+			if (!AssociatedObject.IsDropDownOpen)
 			{
-				_textBox = AssociatedObject?
-					.GetVisualDescendants()
-					.OfType<TextBox>()
-					.FirstOrDefault();
-
-				_textBox?.GotFocus += OnTextBoxGotFocus;
-
-				_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
-
-				// disable light dismiss so that clicking outside the popup doesn't close it
-				_popup?.IsLightDismissEnabled = false;
-
-				if (AssociatedObject?.GetPresentationSource()?.RootVisual?.Parent is Window window)
+				//We *must* set the field and not the property as we need to avoid the changed event being raised (which prevents the dropdown opening).
+				if (typeof(AutoCompleteBox)
+						.GetField("_ignorePropertyChange", BindingFlags.NonPublic | BindingFlags.Instance) is { } ipc &&
+					ipc.GetValue(AssociatedObject) is false)
 				{
-					window.Deactivated += OnWindowDeactivated;
+					ipc?.SetValue(AssociatedObject, true);
 				}
 
-				CreateDropdownButton();
-			});
-		}
-
-		private void OnWindowDeactivated(object? sender, EventArgs e)
-		{
-			_popup?.IsOpen = false;
-		}
-
-		private void OnTextBoxGotFocus(object? sender, FocusChangedEventArgs e)
-		{
-			if (_popupPressed)
-			{
-				_popupPressed = false;
+				AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, true);
 			}
 		}
+	}
+	private void CreateDropdownButton()
+	{
+		if (AssociatedObject is null || _textBox is null)
+			return;
 
-		private void DropDownOpening(object? sender, System.ComponentModel.CancelEventArgs e)
+		var padding = _textBox.Padding.Top;
+		var fontFamily = (FontFamily)Application.Current?.Resources["Phosphor"]!;
+
+		var cornerRadius = _textBox.CornerRadius;
+		var border = _textBox.BorderThickness;
+
+		CornerRadius buttonRadius;
+		int defaultRadius = 3;
+
+		if (DropdownButtonPosition == AutoCompleteBoxDropdownButtonPosition.Left)
 		{
-			if (_textBox?.IsReadOnly ?? false)
-			{
-				e.Cancel = true;
-			}
+			buttonRadius = new CornerRadius(
+				Math.Max(0, cornerRadius.TopLeft - border.Left),
+				defaultRadius,
+				defaultRadius,
+				Math.Max(defaultRadius, cornerRadius.BottomLeft - border.Left));
+		}
+		else // Right side
+		{
+			buttonRadius = new CornerRadius(
+				defaultRadius,
+				Math.Max(defaultRadius, cornerRadius.TopRight - border.Right),
+				Math.Max(defaultRadius, cornerRadius.BottomRight - border.Right),
+				defaultRadius);
 		}
 
-		private void ShowDropdown()
+		_dropDownButton = new Button()
 		{
-			if (AssociatedObject is not null && !AssociatedObject.IsDropDownOpen)
+			Content = new TextBlock()
 			{
-				typeof(AutoCompleteBox).GetMethod("PopulateDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [AssociatedObject, EventArgs.Empty]);
-				typeof(AutoCompleteBox).GetMethod("OpeningDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [false]);
+				Text = "\uEB04",
+				FontSize = _textBox.FontSize,
+				FontFamily = fontFamily,
+				VerticalAlignment = VerticalAlignment.Center,
+				HorizontalAlignment = HorizontalAlignment.Center
+			},
+			Padding = new Thickness(1, padding, 1, padding),
+			Focusable = false,
+			ClickMode = ClickMode.Press,
+			VerticalAlignment = VerticalAlignment.Stretch,
+			CornerRadius = buttonRadius
+		};
 
-				if (!AssociatedObject.IsDropDownOpen)
-				{
-					//We *must* set the field and not the property as we need to avoid the changed event being raised (which prevents the dropdown opening).
-					if (typeof(AutoCompleteBox)
-							.GetField("_ignorePropertyChange", BindingFlags.NonPublic | BindingFlags.Instance) is { } ipc &&
-						ipc.GetValue(AssociatedObject) is false)
-					{
-						ipc?.SetValue(AssociatedObject, true);
-					}
+		_dropDownButton.Click += OnDropDownButtonClick;
 
-					AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, true);
-				}
-			}
-		}
-		private void CreateDropdownButton()
+		if (DropdownButtonPosition == AutoCompleteBoxDropdownButtonPosition.Left)
+			_textBox.InnerLeftContent = _dropDownButton;
+		else
+			_textBox.InnerRightContent = _dropDownButton;
+	}
+
+	private void OnDropDownButtonClick(object? sender, RoutedEventArgs e)
+	{
+		if (AssociatedObject?.IsDropDownOpen ?? false)
 		{
-			if (AssociatedObject is null || _textBox is null)
-				return;
-
-			var padding = _textBox.Padding.Top;
-			var fontFamily = (FontFamily)Application.Current?.Resources["Phosphor"]!;
-
-			var cornerRadius = _textBox.CornerRadius;
-			var border = _textBox.BorderThickness;
-
-			CornerRadius buttonRadius;
-			int defaultRadius = 3;
-
-			if (DropdownButtonPosition == AutoCompleteBoxDropdownButtonPosition.Left)
-			{
-				buttonRadius = new CornerRadius(
-					Math.Max(0, cornerRadius.TopLeft - border.Left),
-					defaultRadius,
-					defaultRadius,
-					Math.Max(defaultRadius, cornerRadius.BottomLeft - border.Left));
-			}
-			else // Right side
-			{
-				buttonRadius = new CornerRadius(
-					defaultRadius,
-					Math.Max(defaultRadius, cornerRadius.TopRight - border.Right),
-					Math.Max(defaultRadius, cornerRadius.BottomRight - border.Right),
-					defaultRadius);
-			}
-
-			_dropDownButton = new Button()
-			{
-				Content = new TextBlock()
-				{
-					Text = "\uEB04",
-					FontSize = _textBox.FontSize,
-					FontFamily = fontFamily,
-					VerticalAlignment = VerticalAlignment.Center,
-					HorizontalAlignment = HorizontalAlignment.Center
-				},
-				Padding = new Thickness(1, padding, 1, padding),
-				Focusable = false,
-				ClickMode = ClickMode.Press,
-				VerticalAlignment = VerticalAlignment.Stretch,
-				CornerRadius = buttonRadius
-			};
-
-			_dropDownButton.Click += OnDropDownButtonClick;
-
-			if (DropdownButtonPosition == AutoCompleteBoxDropdownButtonPosition.Left)
-				_textBox.InnerLeftContent = _dropDownButton;
-			else
-				_textBox.InnerRightContent = _dropDownButton;
+			AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, false);
 		}
-
-		private void OnDropDownButtonClick(object? sender, RoutedEventArgs e)
+		else
 		{
-			if (AssociatedObject?.IsDropDownOpen ?? false)
-			{
-				AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, false);
-			}
-			else
-			{
-				ShowDropdown();
-			}
+			ShowDropdown();
 		}
+	}
 
-		private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
-		{
-			_popupPressed = true;
-		}
+	private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
+	{
+		_popupPressed = true;
+	}
 
-		private void RemoveDropdownButton()
-		{
-			_textBox?.InnerLeftContent = null;
-		}
+	private void RemoveDropdownButton()
+	{
+		_textBox?.InnerLeftContent = null;
 	}
 }

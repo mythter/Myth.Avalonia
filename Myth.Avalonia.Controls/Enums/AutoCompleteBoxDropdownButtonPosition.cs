@@ -1,8 +1,7 @@
-﻿namespace Myth.Avalonia.Controls.Enums
+﻿namespace Myth.Avalonia.Controls.Enums;
+
+public enum AutoCompleteBoxDropdownButtonPosition
 {
-	public enum AutoCompleteBoxDropdownButtonPosition
-	{
-		Left,
-		Right
-	}
+	Left,
+	Right
 }

@@ -9,67 +9,66 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Avalonia.Xaml.Interactivity;
 
-namespace Myth.Avalonia.Controls.Behaviors
+namespace Myth.Avalonia.Controls.Behaviors;
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "<Pending>")]
+public class AutoCompleteResetCaretPositionBehavior : Behavior<AutoCompleteBox>
 {
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "<Pending>")]
-	public class AutoCompleteResetCaretPositionBehavior : Behavior<AutoCompleteBox>
+	private TextBox? _textBox;
+
+	private Popup? _popup;
+
+	private bool _popupPressed;
+
+	protected override void OnAttached()
 	{
-		private TextBox? _textBox;
+		base.OnAttached();
+		AssociatedObject!.AttachedToVisualTree += OnAttachedToVisualTree;
+		AssociatedObject!.LostFocus += OnLostFocus;
+	}
 
-		private Popup? _popup;
+	protected override void OnDetaching()
+	{
+		AssociatedObject!.AttachedToVisualTree -= OnAttachedToVisualTree;
+		AssociatedObject!.LostFocus -= OnLostFocus;
 
-		private bool _popupPressed;
+		_popup?.RemoveHandler(InputElement.PointerPressedEvent, OnPopupPointerPressed);
 
-		protected override void OnAttached()
+		base.OnDetaching();
+	}
+
+	private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+	{
+		Dispatcher.UIThread.Post(() =>
 		{
-			base.OnAttached();
-			AssociatedObject!.AttachedToVisualTree += OnAttachedToVisualTree;
-			AssociatedObject!.LostFocus += OnLostFocus;
-		}
+			_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
 
-		protected override void OnDetaching()
+			_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
+
+			_popup?.AddHandler(
+				InputElement.PointerPressedEvent,
+				OnPopupPointerPressed,
+				RoutingStrategies.Tunnel,
+				handledEventsToo: true
+			);
+		});
+	}
+
+	private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
+	{
+		_popupPressed = true;
+
+		Dispatcher.UIThread.Post(() =>
 		{
-			AssociatedObject!.AttachedToVisualTree -= OnAttachedToVisualTree;
-			AssociatedObject!.LostFocus -= OnLostFocus;
+			_popupPressed = false;
+		});
+	}
 
-			_popup?.RemoveHandler(InputElement.PointerPressedEvent, OnPopupPointerPressed);
-
-			base.OnDetaching();
-		}
-
-		private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+	private void OnLostFocus(object? sender, RoutedEventArgs e)
+	{
+		if (!_popupPressed && _textBox != null)
 		{
-			Dispatcher.UIThread.Post(() =>
-			{
-				_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
-
-				_popup = AssociatedObject?.GetVisualDescendants().OfType<Popup>().FirstOrDefault();
-
-				_popup?.AddHandler(
-					InputElement.PointerPressedEvent,
-					OnPopupPointerPressed,
-					RoutingStrategies.Tunnel,
-					handledEventsToo: true
-				);
-			});
-		}
-
-		private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
-		{
-			_popupPressed = true;
-
-			Dispatcher.UIThread.Post(() =>
-			{
-				_popupPressed = false;
-			});
-		}
-
-		private void OnLostFocus(object? sender, RoutedEventArgs e)
-		{
-			if (!_popupPressed && _textBox != null)
-			{
-				_textBox.CaretIndex = 0;
-			}
+			_textBox.CaretIndex = 0;
 		}
 	}
 }
