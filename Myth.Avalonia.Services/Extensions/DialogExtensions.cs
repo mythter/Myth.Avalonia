@@ -110,6 +110,8 @@ public static class DialogExtensions
 			Content = content,
 			ContentTemplate = contentTemplate,
 			SizeToContent = SizeToContent.WidthAndHeight,
+			CanResize = false,
+			CanMaximize = false,
 			WindowStartupLocation = WindowStartupLocation.CenterScreen,
 		};
 
@@ -145,6 +147,8 @@ public static class DialogExtensions
 			Content = content,
 			ContentTemplate = contentTemplate,
 			SizeToContent = SizeToContent.WidthAndHeight,
+			CanResize = false,
+			CanMaximize = false,
 			WindowStartupLocation = WindowStartupLocation.CenterScreen,
 		};
 
