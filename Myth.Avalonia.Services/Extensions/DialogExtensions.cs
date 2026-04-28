@@ -117,6 +117,58 @@ public static class DialogExtensions
 	}
 
 	/// <summary>
+	/// Shows a dialog window for a given context, ensuring the owner window is visible during the operation.
+	/// This method preserves the owner window's visibility and state, temporarily showing it if hidden to allow the dialog to display.
+	/// After the dialog closes, the original window state and visibility are restored.
+	/// </summary>
+	/// <param name="context">The context to use</param>
+	/// <param name="windowTitle">The dialog's window title</param>
+	/// <param name="content">The content to show</param>
+	/// <param name="contentTemplate">Optional: An <see cref="IDataTemplate"/> to represnet the <see cref="content"/></param>
+	/// <typeparam name="T">The expected type to return</typeparam>
+	/// <returns>The result or null if dialog was canceled</returns>
+	/// <exception cref="InvalidOperationException">The dialog window can only be shown if the app is a desktop app.</exception>
+	public static async Task<T?> ShowDialogWindowSafe<T>(this IDialogContext? context,
+		string windowTitle,
+		object content,
+		IDataTemplate? contentTemplate = null)
+	{
+		ArgumentNullException.ThrowIfNull(context);
+
+		// Get the owner window. If it is null, throw an exception
+		var ownerWindow = DialogManager.GetTopLevelForContext(context) as Window
+			?? throw new InvalidOperationException("The method ShowDialogWindow can only be used on a Window");
+
+		var dialog = new Window()
+		{
+			Title = windowTitle,
+			Content = content,
+			ContentTemplate = contentTemplate,
+			SizeToContent = SizeToContent.WidthAndHeight,
+			WindowStartupLocation = WindowStartupLocation.CenterScreen,
+		};
+
+		var windowVisible = ownerWindow.IsVisible;
+		var windowState = ownerWindow.WindowState;
+
+		if (!windowVisible)
+		{
+			ownerWindow.WindowState = WindowState.Minimized;
+			ownerWindow.Show();
+		}
+
+		var result = await dialog.ShowDialog<T?>(ownerWindow);
+
+		if (!windowVisible)
+		{
+			ownerWindow.Hide();
+			ownerWindow.WindowState = windowState;
+		}
+
+		return result;
+	}
+
+	/// <summary>
 	/// Closes a dialog window with the given result
 	/// </summary>
 	/// <param name="context">The context to resolve the window</param>
