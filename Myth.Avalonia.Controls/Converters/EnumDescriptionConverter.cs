@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 
+using Avalonia.Data;
 using Avalonia.Data.Converters;
 
 using Myth.Avalonia.Controls.Extensions;
@@ -12,5 +13,5 @@ public class EnumDescriptionConverter : IValueConverter
 		=> value is Enum e ? e.GetDescription() : value?.ToString();
 
 	public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-		=> throw new NotImplementedException();
+		=> BindingOperations.DoNothing;
 }
