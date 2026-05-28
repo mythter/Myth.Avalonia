@@ -27,7 +27,6 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 		{
 			AssociatedObject.KeyUp += OnKeyUp;
 			AssociatedObject.DropDownOpening += DropDownOpening;
-
 			AssociatedObject.AttachedToVisualTree += OnAttachedToVisualTree;
 		}
 
@@ -101,27 +100,29 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 
 	private void ShowDropdown()
 	{
-		if (AssociatedObject is not null && !AssociatedObject.IsDropDownOpen)
+		if (AssociatedObject is null || AssociatedObject.IsDropDownOpen)
 		{
-			Dispatcher.UIThread.Post(() =>
-			{
-				typeof(AutoCompleteBox).GetMethod("PopulateDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [AssociatedObject, EventArgs.Empty]);
-				typeof(AutoCompleteBox).GetMethod("OpeningDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [false]);
-
-				if (!AssociatedObject.IsDropDownOpen)
-				{
-					//We *must* set the field and not the property as we need to avoid the changed event being raised (which prevents the dropdown opening).
-					if (typeof(AutoCompleteBox)
-							.GetField("_ignorePropertyChange", BindingFlags.NonPublic | BindingFlags.Instance) is { } ipc &&
-						ipc.GetValue(AssociatedObject) is false)
-					{
-						ipc?.SetValue(AssociatedObject, true);
-					}
-
-					AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, true);
-				}
-			});
+			return;
 		}
+
+		Dispatcher.UIThread.Post(() =>
+		{
+			typeof(AutoCompleteBox).GetMethod("PopulateDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [AssociatedObject, EventArgs.Empty]);
+			typeof(AutoCompleteBox).GetMethod("OpeningDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [false]);
+
+			if (!AssociatedObject.IsDropDownOpen)
+			{
+				//We *must* set the field and not the property as we need to avoid the changed event being raised (which prevents the dropdown opening).
+				if (typeof(AutoCompleteBox)
+						.GetField("_ignorePropertyChange", BindingFlags.NonPublic | BindingFlags.Instance) is { } ipc &&
+					ipc.GetValue(AssociatedObject) is false)
+				{
+					ipc?.SetValue(AssociatedObject, true);
+				}
+
+				AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, true);
+			}
+		});
 	}
 
 	private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
