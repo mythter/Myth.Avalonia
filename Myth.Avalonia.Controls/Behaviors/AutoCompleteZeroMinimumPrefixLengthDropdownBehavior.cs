@@ -43,6 +43,7 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 		}
 
 		_textBox?.GotFocus -= OnTextBoxGotFocus;
+		_textBox?.LostFocus -= OnTextBoxLostFocus;
 
 		_popup?.IsLightDismissEnabled = true; // giving back the original behavior
 
@@ -60,6 +61,7 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 			_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
 
 			_textBox?.GotFocus += OnTextBoxGotFocus;
+			_textBox?.LostFocus += OnTextBoxLostFocus;
 
 			// disable light dismiss so that clicking outside the popup doesn't close it
 			_popup?.IsLightDismissEnabled = false;
@@ -128,6 +130,17 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 	private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
 	{
 		_popupPressed = true;
+	}
+
+	private void OnTextBoxLostFocus(object? sender, FocusChangedEventArgs e)
+	{
+		if (_popupPressed && sender is TextBox tb)
+		{
+			tb.Focus();
+			return;
+		}
+
+		_popup?.IsOpen = false;
 	}
 
 	private void OnTextBoxGotFocus(object? sender, RoutedEventArgs e)
