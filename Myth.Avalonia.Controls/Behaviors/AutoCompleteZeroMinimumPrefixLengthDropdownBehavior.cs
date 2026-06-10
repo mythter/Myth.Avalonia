@@ -27,7 +27,6 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 		{
 			AssociatedObject.KeyUp += OnKeyUp;
 			AssociatedObject.DropDownOpening += DropDownOpening;
-
 			AssociatedObject.AttachedToVisualTree += OnAttachedToVisualTree;
 		}
 
@@ -44,6 +43,7 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 		}
 
 		_textBox?.GotFocus -= OnTextBoxGotFocus;
+		_textBox?.LostFocus -= OnTextBoxLostFocus;
 
 		_popup?.IsLightDismissEnabled = true; // giving back the original behavior
 
@@ -61,6 +61,7 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 			_textBox = AssociatedObject?.GetVisualDescendants().OfType<TextBox>().FirstOrDefault();
 
 			_textBox?.GotFocus += OnTextBoxGotFocus;
+			_textBox?.LostFocus += OnTextBoxLostFocus;
 
 			// disable light dismiss so that clicking outside the popup doesn't close it
 			_popup?.IsLightDismissEnabled = false;
@@ -101,32 +102,45 @@ public class AutoCompleteZeroMinimumPrefixLengthDropdownBehavior : Behavior<Auto
 
 	private void ShowDropdown()
 	{
-		if (AssociatedObject is not null && !AssociatedObject.IsDropDownOpen)
+		if (AssociatedObject is null || AssociatedObject.IsDropDownOpen)
 		{
-			Dispatcher.UIThread.Post(() =>
-			{
-				typeof(AutoCompleteBox).GetMethod("PopulateDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [AssociatedObject, EventArgs.Empty]);
-				typeof(AutoCompleteBox).GetMethod("OpeningDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [false]);
-
-				if (!AssociatedObject.IsDropDownOpen)
-				{
-					//We *must* set the field and not the property as we need to avoid the changed event being raised (which prevents the dropdown opening).
-					if (typeof(AutoCompleteBox)
-							.GetField("_ignorePropertyChange", BindingFlags.NonPublic | BindingFlags.Instance) is { } ipc &&
-						ipc.GetValue(AssociatedObject) is false)
-					{
-						ipc?.SetValue(AssociatedObject, true);
-					}
-
-					AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, true);
-				}
-			});
+			return;
 		}
+
+		Dispatcher.UIThread.Post(() =>
+		{
+			typeof(AutoCompleteBox).GetMethod("PopulateDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [AssociatedObject, EventArgs.Empty]);
+			typeof(AutoCompleteBox).GetMethod("OpeningDropDown", BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(AssociatedObject, [false]);
+
+			if (!AssociatedObject.IsDropDownOpen)
+			{
+				//We *must* set the field and not the property as we need to avoid the changed event being raised (which prevents the dropdown opening).
+				if (typeof(AutoCompleteBox)
+						.GetField("_ignorePropertyChange", BindingFlags.NonPublic | BindingFlags.Instance) is { } ipc &&
+					ipc.GetValue(AssociatedObject) is false)
+				{
+					ipc?.SetValue(AssociatedObject, true);
+				}
+
+				AssociatedObject.SetCurrentValue(AutoCompleteBox.IsDropDownOpenProperty, true);
+			}
+		});
 	}
 
 	private void OnPopupPointerPressed(object? sender, PointerPressedEventArgs e)
 	{
 		_popupPressed = true;
+	}
+
+	private void OnTextBoxLostFocus(object? sender, FocusChangedEventArgs e)
+	{
+		if (_popupPressed && sender is TextBox tb)
+		{
+			tb.Focus();
+			return;
+		}
+
+		_popup?.IsOpen = false;
 	}
 
 	private void OnTextBoxGotFocus(object? sender, RoutedEventArgs e)

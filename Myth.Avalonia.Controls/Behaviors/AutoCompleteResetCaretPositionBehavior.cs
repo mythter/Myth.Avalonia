@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
@@ -66,7 +64,7 @@ public class AutoCompleteResetCaretPositionBehavior : Behavior<AutoCompleteBox>
 
 	private void OnLostFocus(object? sender, RoutedEventArgs e)
 	{
-		if (!_popupPressed && _textBox != null)
+		if (!_popupPressed && _textBox is not null)
 		{
 			_textBox.CaretIndex = 0;
 		}
